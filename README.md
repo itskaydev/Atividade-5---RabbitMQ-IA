@@ -51,8 +51,8 @@ Ambas usam a biblioteca **Smile** (`smile-core 3.1.1`), sem chamadas a APIs exte
 Pré-requisitos: Docker Desktop (com WSL2 no Windows) e Git.
 
 ```bash
-git clone <URL-DO-SEU-REPOSITORIO>
-cd <pasta-do-repositorio>
+git clone <https://github.com/itskaydev/Atividade-5---RabbitMQ-IA.git>
+cd <C:\Users\Kaylanne\Documents\6°periodo\SD\trab-5>
 docker compose up --build
 ```
 
@@ -90,4 +90,4 @@ evidencias/           (capturas de tela da interface do RabbitMQ)
 Capturas em `evidencias/`: filas crescendo, exchange/bindings, DLQ com mensagem, logs dos consumidores.
 
 ## Vídeo de demonstração
-<COLE AQUI O LINK DO VÍDEO>
+<https://youtu.be/YKBeTtwgJvQ?is=KlR-Y0imyZ5G4evt>
