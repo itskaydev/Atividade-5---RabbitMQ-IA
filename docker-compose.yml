@@ -1,0 +1,63 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Interface de administração (http://localhost:15672)
+    environment:
+         RABBITMQ_DEFAULT_USER: admin
+         RABBITMQ_DEFAULT_PASS: admin123
+         RABBITMQ_ERLANG_COOKIE: "cookie-trab5-sd"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 20s
+    networks: [rede-mensagens]
+
+  generator:
+    build: ./generator
+    container_name: generator
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: admin
+      RABBITMQ_PASS: admin123
+      MESSAGES_PER_SECOND: "6"   # mínimo exigido: 5
+      POISON_EVERY: "100"        # a cada 100 mensagens, 1 é "envenenada" (vai para a DLQ). 0 desliga
+    networks: [rede-mensagens]
+
+  consumer-sentiment:
+    build: ./consumer-sentiment
+    container_name: consumer-sentiment
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: admin
+      RABBITMQ_PASS: admin123
+      PROCESSING_DELAY_MS: "1500"   # mais lento que a chegada => fila cresce
+    networks: [rede-mensagens]
+
+  consumer-support:
+    build: ./consumer-support
+    container_name: consumer-support
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: admin
+      RABBITMQ_PASS: admin123
+      PROCESSING_DELAY_MS: "1500"
+    networks: [rede-mensagens]
+
+networks:
+  rede-mensagens:
+    driver: bridge
